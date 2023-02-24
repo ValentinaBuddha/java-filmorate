@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,11 +24,13 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
+    public User create(@Valid @RequestBody User user) {
         if (users.containsValue(user)) {
             throw new ValidationException("Такой пользователь уже существует.");
         }
-        validateUser(user);
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         user.setId(++generatorId);
         users.put(user.getId(), user);
         log.debug("Пользователь {} создан.", user.getLogin());
@@ -36,30 +38,17 @@ public class UserController {
     }
 
     @PutMapping
-    public User update(@RequestBody User user) {
+    public User update(@Valid @RequestBody User user) {
         int id = user.getId();
         if (!users.containsKey(id)) {
             log.debug("Пользователь не найден.");
             throw new ValidationException("Пользователь не найден.");
         }
-        validateUser(user);
-        users.put(id, user);
-        log.debug("Пользователь {} обновлен.", user.getLogin());
-        return user;
-    }
-
-    public void validateUser(User user) {
-        if (user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @.");
-        }
-        if (user.getLogin().isBlank() || user.getLogin().matches(".*\\s+.*")) {
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы.");
-        }
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не может быть в будущем.");
-        }
+        users.put(id, user);
+        log.debug("Пользователь {} обновлен.", user.getLogin());
+        return user;
     }
 }

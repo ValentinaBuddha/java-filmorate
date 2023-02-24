@@ -2,31 +2,21 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.*;
 
+import javax.validation.constraints.*;
 import java.time.LocalDate;
-
 
 @Data
 @Builder
 public class User {
     private Integer id;
-    @NonNull
+    @NotBlank(message = "Электронная почта не может быть пустой.")
+    @Email(message = "Электронная почта должна содержать символ @.")
     private String email;
-    @NonNull
+    @NotBlank(message = "Логин не может быть пустым.")
+    @Pattern(regexp = "^\\S*$", message = "Логин не может содержать пробелы.")
     private String login;
     private String name;
+    @NotNull
+    @Past(message = "Дата рождения не может быть в будущем.")
     private LocalDate birthday;
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        User user = (User) o;
-//        return Objects.equals(email, user.email) &&
-//               Objects.equals(login, user.login);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(email, login);
-//    }
 }
