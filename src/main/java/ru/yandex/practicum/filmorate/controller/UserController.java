@@ -25,12 +25,7 @@ public class UserController {
 
     @PostMapping
     public User create(@Valid @RequestBody User user) {
-        if (users.containsValue(user)) {
-            throw new ValidationException("Такой пользователь уже существует.");
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+        validate(user);
         user.setId(++generatorId);
         users.put(user.getId(), user);
         log.debug("Пользователь {} создан.", user.getLogin());
@@ -44,11 +39,15 @@ public class UserController {
             log.debug("Пользователь не найден.");
             throw new ValidationException("Пользователь не найден.");
         }
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+        validate(user);
         users.put(id, user);
         log.debug("Пользователь {} обновлен.", user.getLogin());
         return user;
+    }
+
+    public void validate(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
     }
 }

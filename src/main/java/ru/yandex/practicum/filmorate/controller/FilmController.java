@@ -25,9 +25,6 @@ public class FilmController {
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
-        if (films.containsValue(film)) {
-            throw new ValidationException("Такой фильм уже существует.");
-        }
         film.setId(++generatorId);
         films.put(film.getId(), film);
         log.debug("Фильм под названием {} создан.", film.getName());

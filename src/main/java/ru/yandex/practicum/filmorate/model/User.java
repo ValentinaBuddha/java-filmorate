@@ -17,6 +17,6 @@ public class User {
     private String login;
     private String name;
     @NotNull
-    @Past(message = "Дата рождения не может быть в будущем.")
+    @PastOrPresent(message = "Дата рождения не может быть в будущем.")
     private LocalDate birthday;
 }

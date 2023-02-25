@@ -15,6 +15,7 @@ public class Film {
     private Integer id;
     @NotBlank(message = "Введите название фильма.")
     private String name;
+    @NotNull
     @Size(max = 200, message = "Слишком длинное описание.")
     private String description;
     @NotNull
