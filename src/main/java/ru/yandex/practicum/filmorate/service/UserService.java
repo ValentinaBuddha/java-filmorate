@@ -1,57 +1,54 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+@RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserStorage userStorage;
-
-    @Autowired
-    public UserService(InMemoryUserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
 
     public List<User> findAll() {
         return userStorage.findAll();
     }
 
     public User create(User user) {
+        validate(user);
         return userStorage.create(user);
     }
 
     public User update(User user) {
+        validate(user);
         return userStorage.update(user);
     }
 
     public User findUserById(int id) {
-        return userStorage.findUserById(id);
+        return userStorage.findUserById(id).orElseThrow(() -> new UserNotFoundException("Пользователь не найден."));
     }
 
     public void addFriend(int id, int friendId) {
         if (id < 0 || friendId < 0) {
             throw new UserNotFoundException("Пользователь не найден.");
         }
-        userStorage.findUserById(id).getFriends().add(friendId);
-        userStorage.findUserById(friendId).getFriends().add(id);
+        findUserById(id).getFriends().add(friendId);
+        findUserById(friendId).getFriends().add(id);
     }
 
     public List<User> findAllFriends(int id) {
         List<User> friendsList = new ArrayList<>();
-        Set<Integer> friends = userStorage.findUserById(id).getFriends();
+        Set<Integer> friends = findUserById(id).getFriends();
         if (friends == null) {
             return friendsList;
         }
         for (Integer friendId : friends) {
-            User friend = userStorage.findUserById(friendId);
+            User friend = findUserById(friendId);
             friendsList.add(friend);
         }
         return friendsList;
@@ -65,7 +62,13 @@ public class UserService {
     }
 
     public void removeFriend(int id, int friendId) {
-        userStorage.findUserById(id).getFriends().remove(friendId);
-        userStorage.findUserById(friendId).getFriends().remove(id);
+        findUserById(id).getFriends().remove(friendId);
+        findUserById(friendId).getFriends().remove(id);
+    }
+
+    private void validate(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
     }
 }

@@ -1,24 +1,20 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
-
-    @Autowired
-    public FilmService(InMemoryFilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
-    }
 
     public List<Film> findAll() {
         return filmStorage.findAll();
@@ -33,19 +29,19 @@ public class FilmService {
     }
 
     public Film findFilmById(int id) {
-        return filmStorage.findFilmById(id);
+        return filmStorage.findFilmById(id).orElseThrow(() -> new FilmNotFoundException("Фильм не найден."));
     }
 
     public void addLike(int id, int userId) {
-        filmStorage.findFilmById(id).getLikes().add(userId);
+        findFilmById(id).getLikes().add(userId);
     }
 
     public void removeLike(int id, int userId) {
-        Set<Integer> likes = filmStorage.findFilmById(id).getLikes();
+        Set<Integer> likes = findFilmById(id).getLikes();
         if (!likes.contains(userId)) {
             throw new UserNotFoundException("Пользователь не найден.");
         }
-        filmStorage.findFilmById(id).getLikes().remove(userId);
+        findFilmById(id).getLikes().remove(userId);
     }
 
     public List<Film> findPopular(int count) {
