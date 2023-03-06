@@ -30,7 +30,7 @@ public class UserService {
     }
 
     public User findUserById(int id) {
-        return userStorage.findUserById(id).orElseThrow(() -> new UserNotFoundException("Пользователь не найден."));
+        return userStorage.findUserById(id).orElseThrow(() -> new UserNotFoundException("Пользователь не найден"));
     }
 
     public void addFriend(int id, int friendId) {
