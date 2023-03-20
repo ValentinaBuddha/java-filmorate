@@ -41,7 +41,7 @@ public class FilmService {
         if (!likes.contains(userId)) {
             throw new UserNotFoundException("Пользователь не найден.");
         }
-        findFilmById(id).getLikes().remove(userId);
+        likes.remove(userId);
     }
 
     public List<Film> findPopular(int count) {

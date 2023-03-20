@@ -19,27 +19,27 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse validateException(final MethodArgumentNotValidException e) {
-        log.error(e.getMessage());
+        log.info(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     public ResponseEntity<String> validateException(final ConstraintViolationException e) {
-        log.error(e.getMessage());
+        log.info(e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse filmNotFoundException(final FilmNotFoundException e) {
-        log.error(e.getMessage());
+        log.info(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse userNotFoundException(final UserNotFoundException e) {
-        log.error(e.getMessage());
+        log.info(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
