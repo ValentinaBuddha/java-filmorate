@@ -49,7 +49,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> findFriends(int Id) {
+    public List<User> findFriends(int id) {
         return null;
     }
 
