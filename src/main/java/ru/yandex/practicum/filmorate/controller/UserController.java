@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -9,6 +10,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import javax.validation.Valid;
 import java.util.List;
 
+@Validated
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -29,9 +31,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> findAllFriends(@PathVariable("id") int id) {
+    public List<User> findFriends(@PathVariable("id") int id) {
         log.info("GET / {} / friends", id);
-        return userService.findAllFriends(id);
+        return userService.findFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")

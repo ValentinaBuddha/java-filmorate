@@ -20,9 +20,9 @@ public class FilmController {
     private final FilmService filmService;
 
     @GetMapping
-    public List<Film> findAll() {
+    public List<Film> findAllFilms() {
         log.info("GET / films");
-        return filmService.findAll();
+        return filmService.findAllFilms();
     }
 
     @GetMapping("/{id}")
@@ -32,7 +32,7 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> findPopular(@RequestParam(defaultValue = "10")@Positive int count) {
+    public List<Film> findPopular(@RequestParam(defaultValue = "10") @Positive int count) {
         log.info("GET / popular");
         return filmService.findPopular(count);
     }
