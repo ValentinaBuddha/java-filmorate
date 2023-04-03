@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -11,14 +11,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Repository
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public MpaDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<Mpa> findAllMpa() {
@@ -28,7 +24,8 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public Optional<Mpa> findMpaById(int id) {
-        return findAllMpa().stream().filter(mpa -> mpa.getId() == id).findFirst();
+        String sql = "SELECT * FROM mpa_rating where rating_id = ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> makeMpa(rs), id).stream().findFirst();
     }
 
     private Mpa makeMpa(ResultSet rs) throws SQLException {

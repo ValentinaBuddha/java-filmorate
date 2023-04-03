@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
@@ -12,23 +11,18 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
-
-    @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, MpaStorage mpaStorage, GenreStorage genreStorage) {
-        this.filmStorage = filmStorage;
-        this.mpaStorage = mpaStorage;
-        this.genreStorage = genreStorage;
-    }
+    private final LikeStorage likeStorage;
 
     public List<Film> findAllFilms() {
         return filmStorage.findAllFilms();
@@ -47,21 +41,18 @@ public class FilmService {
     }
 
     public void addLike(int id, int userId) {
-        filmStorage.addLike(id, userId);
+        likeStorage.addLike(id, userId);
     }
 
     public void removeLike(int id, int userId) {
         if (userId < 0 || id < 0) {
             throw new UserNotFoundException("Пользователь не найден.");
         }
-        filmStorage.removeLike(id, userId);
+        likeStorage.removeLike(id, userId);
     }
 
     public List<Film> findPopular(int count) {
-        return findAllFilms().stream()
-                .sorted((o1, o2) -> Integer.compare(o2.getLikes().size(), o1.getLikes().size()))
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.findPopular(count);
     }
 
     public List<Mpa> findAllMpa() {

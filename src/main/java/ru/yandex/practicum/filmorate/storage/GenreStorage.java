@@ -9,6 +9,4 @@ public interface GenreStorage {
     List<Genre> findGenres();
 
     Optional<Genre> findGenreById(int id);
-
-    List<Genre> findGenresByFilm(int id);
 }

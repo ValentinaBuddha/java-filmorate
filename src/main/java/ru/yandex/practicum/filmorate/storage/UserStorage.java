@@ -13,12 +13,4 @@ public interface UserStorage {
     User update(User user);
 
     Optional<User> findUserById(int id);
-
-    void addFriend(int userId, int friendId);
-
-    void removeFriend(int id, int friendId);
-
-    List<User> findFriends(int id);
-
-    List<User> findCommonFriends(int id, int otherId);
 }

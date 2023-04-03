@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.dao;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
@@ -12,18 +11,12 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Repository
-@Qualifier("userDbStorage")
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public User create(User user) {
@@ -70,53 +63,13 @@ public class UserDbStorage implements UserStorage {
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
     }
 
-    @Override
-    public void addFriend(int userId, int friendId) {
-        if (!findUserById(userId).isPresent() || !findUserById(friendId).isPresent()) {
-            throw new UserNotFoundException("Пользователь не найден.");
-        }
-        String sql = "INSERT INTO friendship(user_id, friend_id) VALUES (?,?)";
-        jdbcTemplate.update(sql, userId, friendId);
-    }
-
-    @Override
-    public void removeFriend(int userId, int friendId) {
-        if (!findUserById(userId).isPresent() || !findUserById(friendId).isPresent()) {
-            throw new UserNotFoundException("Пользователь не найден.");
-        }
-        String sql = "DELETE FROM friendship WHERE user_id in (?, ?) AND friend_id in (?, ?)";
-        jdbcTemplate.update(sql, userId, friendId, userId, friendId);
-    }
-
-    @Override
-    public List<User> findFriends(int id) {
-        String sql = "SELECT u.user_id, u.email, u.login, u.name, u.birthday " +
-                "FROM friendship AS f " +
-                "INNER JOIN users AS u ON u.user_id = f.friend_id " +
-                "WHERE f.user_id = ? " +
-                "ORDER BY u.user_id";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id);
-    }
-
-    @Override
-    public List<User> findCommonFriends(int id, int otherId) {
-        String sql = "SELECT u.user_id, u.email, u.login, u.name, u.birthday " +
-                "FROM friendship AS f " +
-                "INNER JOIN friendship fr on fr.friend_id = f.friend_id " +
-                "INNER JOIN users u on u.user_id = fr.friend_id " +
-                "WHERE f.user_id = ? and fr.user_id = ? " +
-                "AND f.friend_id <> fr.user_id AND fr.friend_id <> f.user_id";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id, otherId);
-    }
-
     private User makeUser(ResultSet rs) throws SQLException {
-        User user = User.builder()
+        return User.builder()
                 .id(rs.getInt("user_id"))
                 .email(rs.getString("email"))
                 .login(rs.getString("login"))
                 .name(rs.getString("name"))
                 .birthday(rs.getDate("birthday").toLocalDate())
                 .build();
-        return user;
     }
 }
