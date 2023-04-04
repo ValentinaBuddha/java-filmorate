@@ -12,7 +12,6 @@ public class LikeBbStorage implements LikeStorage {
 
     @Override
     public void addLike(int id, int userId) {
-        removeLike(id, userId);
         String sql = "INSERT INTO likes (film_id, user_id) VALUES (?, ?)";
         jdbcTemplate.update(sql, id, userId);
     }

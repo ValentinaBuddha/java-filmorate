@@ -26,7 +26,9 @@ public class UserService {
 
     public User update(User user) {
         validate(user);
-
+        if (userStorage.findUserById(user.getId()).isEmpty()) {
+            throw new UserNotFoundException("Пользователь не найден.");
+        }
         return userStorage.update(user);
     }
 
@@ -35,14 +37,17 @@ public class UserService {
     }
 
     public void addFriend(int id, int friendId) {
+        if (userStorage.findUserById(id).isEmpty() || userStorage.findUserById(friendId).isEmpty()) {
+            throw new UserNotFoundException("Пользователь не найден.");
+        }
         if (id < 0 || friendId < 0) {
             throw new UserNotFoundException("Пользователь не найден.");
         }
         friendStorage.addFriend(id, friendId);
     }
 
-    public List<User> findFriends(int id) {
-        return friendStorage.findFriends(id);
+    public List<User> findAllFriends(int id) {
+        return friendStorage.findAllFriends(id);
     }
 
     public List<User> findCommonFriends(int id, int otherId) {
@@ -50,6 +55,9 @@ public class UserService {
     }
 
     public void removeFriend(int id, int friendId) {
+        if (userStorage.findUserById(id).isEmpty() || userStorage.findUserById(friendId).isEmpty()) {
+            throw new UserNotFoundException("Пользователь не найден.");
+        }
         friendStorage.removeFriend(id, friendId);
     }
 
