@@ -15,11 +15,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Repository
@@ -83,18 +81,6 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(SELECT_FILMS + sql, (rs, rowNum) -> makeFilm(rs), count);
     }
 
-    @Override
-    public void findAllGenresByFilm(List<Film> films) {
-        List<Integer> filmIds = films.stream().map(Film::getId).collect(Collectors.toList());
-        String sql = "SELECT * FROM GENRES g, film_genres fg WHERE fg.genre_id = g.genre_id AND fg.film_id in (%s)";
-        String inSql = String.join(",", Collections.nCopies(filmIds.size(), "?"));
-        for (Film film : films) {
-            List<Genre> genres = jdbcTemplate.query(String.format(sql, inSql), filmIds.toArray(),
-                    (rs, rowNum) -> new Genre(rs.getInt("genre_id"), rs.getString("name")));
-            film.getGenres().addAll(genres);
-        }
-    }
-
     private Film makeFilm(ResultSet rs) throws SQLException {
         Integer id = rs.getInt("film_id");
         Film film = Film.builder()
@@ -105,7 +91,6 @@ public class FilmDbStorage implements FilmStorage {
                 .duration(rs.getInt("duration"))
                 .mpa(new Mpa(rs.getInt("rating_id"), rs.getString("mpa_name")))
                 .build();
-        findAllGenresByFilm(List.of(film));
         return film;
     }
 

@@ -34,11 +34,15 @@ public class FilmService {
     }
 
     public List<Film> findAllFilms() {
-        return filmStorage.findAllFilms();
+        List<Film> films = filmStorage.findAllFilms();
+        genreStorage.findAllGenresByFilm(films);
+        return films;
     }
 
     public Film findFilmById(int id) {
-        return filmStorage.findFilmById(id).orElseThrow(() -> new FilmNotFoundException("Фильм не найден."));
+        Film film = filmStorage.findFilmById(id).orElseThrow(() -> new FilmNotFoundException("Фильм не найден."));
+        genreStorage.findAllGenresByFilm(List.of(film));
+        return film;
     }
 
     public void addLike(int id, int userId) {
@@ -56,7 +60,9 @@ public class FilmService {
     }
 
     public List<Film> findPopular(int count) {
-        return filmStorage.findPopular(count);
+        List<Film> films = filmStorage.findPopular(count);
+        genreStorage.findAllGenresByFilm(films);
+        return films;
     }
 
     public List<Mpa> findAllMpa() {
