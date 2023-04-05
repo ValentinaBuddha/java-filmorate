@@ -16,30 +16,6 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping
-    public List<User> findAll() {
-        log.info("GET / users");
-        return userService.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public User findUserById(@PathVariable("id") int id) {
-        log.info("GET / users / {}", id);
-        return userService.findUserById(id);
-    }
-
-    @GetMapping("/{id}/friends")
-    public List<User> findAllFriends(@PathVariable("id") int id) {
-        log.info("GET / {} / friends", id);
-        return userService.findAllFriends(id);
-    }
-
-    @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> findCommonFriends(@PathVariable("id") int id, @PathVariable("otherId") int otherId) {
-        log.info("GET / {} / friends / common / {}", id, otherId);
-        return userService.findCommonFriends(id, otherId);
-    }
-
     @PostMapping
     public User create(@Valid @RequestBody User user) {
         log.info("POST / user / {}", user.getLogin());
@@ -54,6 +30,18 @@ public class UserController {
         return user;
     }
 
+    @GetMapping
+    public List<User> findAll() {
+        log.info("GET / users");
+        return userService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public User findUserById(@PathVariable("id") int id) {
+        log.info("GET / users / {}", id);
+        return userService.findUserById(id);
+    }
+
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable("id") int id, @PathVariable("friendId") int friendId) {
         log.info("PUT / {} / friends / {}", id, friendId);
@@ -64,5 +52,17 @@ public class UserController {
     public void removeFriend(@PathVariable("id") int id, @PathVariable("friendId") int friendId) {
         log.info("PUT / {} / friends / {}", id, friendId);
         userService.removeFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> findAllFriends(@PathVariable("id") int id) {
+        log.info("GET / {} / friends", id);
+        return userService.findAllFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> findCommonFriends(@PathVariable("id") int id, @PathVariable("otherId") int otherId) {
+        log.info("GET / {} / friends / common / {}", id, otherId);
+        return userService.findCommonFriends(id, otherId);
     }
 }
