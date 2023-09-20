@@ -23,7 +23,7 @@ public class FriendDbStorage implements FriendStorage {
 
     @Override
     public void removeFriend(int id, int friendId) {
-        String sql = "DELETE FROM friendship WHERE user_id in (?, ?) AND friend_id in (?, ?)";
+        String sql = "DELETE FROM friendship WHERE user_id IN (?, ?) AND friend_id IN (?, ?)";
         jdbcTemplate.update(sql, id, friendId, id, friendId);
     }
 
@@ -41,9 +41,9 @@ public class FriendDbStorage implements FriendStorage {
     public List<User> findCommonFriends(int id, int otherId) {
         String sql = "SELECT u.user_id, u.email, u.login, u.name, u.birthday " +
                 "FROM friendship AS f " +
-                "INNER JOIN friendship fr on fr.friend_id = f.friend_id " +
-                "INNER JOIN users u on u.user_id = fr.friend_id " +
-                "WHERE f.user_id = ? and fr.user_id = ? " +
+                "INNER JOIN friendship fr ON fr.friend_id = f.friend_id " +
+                "INNER JOIN users u ON u.user_id = fr.friend_id " +
+                "WHERE f.user_id = ? AND fr.user_id = ? " +
                 "AND f.friend_id <> fr.user_id AND fr.friend_id <> f.user_id";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeFriend(rs), id, otherId);
     }
