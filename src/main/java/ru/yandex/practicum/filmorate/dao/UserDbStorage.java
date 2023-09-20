@@ -22,7 +22,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User create(User user) {
-        String sql = "insert into users (email, login, name, birthday) values (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(
                 connection -> {
@@ -46,13 +46,13 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> findAll() {
-        String sql = "select user_id, login, name, email, birthday from users";
+        String sql = "SELECT user_id, login, name, email, birthday FROM users";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs));
     }
 
     @Override
     public Optional<User> findUserById(int id) {
-        String sql = "select * from users where user_id = ?";
+        String sql = "SELECT * FROM users WHERE user_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs), id).stream().findFirst();
     }
 
